@@ -1,0 +1,11 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "limits.h": "c",
+        "string.h": "c",
+        "corecrt.h": "c",
+        "vcruntime.h": "c",
+        "stdbool.h": "c",
+        "stdarg.h": "c"
+    }
+}
