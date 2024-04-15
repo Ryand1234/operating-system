@@ -51,23 +51,25 @@ int printf(const char* restrict format, ...) {
         } else if (*format == '%' && *format_begin_at == 's') {
             const char* str = va_arg(parameters, const char*);
             size_t len = strlen(str);
-            if(maxrem < len)
+            if(maxrem < len){
                 return -1;
-            if(!print(str, len))
+	    }
+            if(!print(str, len)) {
                 return -1;
+	    }
             written += len;
         } else {
             size_t len = strlen(format_begin_at);
             if (maxrem < len) {
-				return -1;
-			}
-			if (!print(format_begin_at, len))
-				return -1;
-			written += len;
-			format += len;
+			return -1;
+		}
+	if (!print(format_begin_at, len))
+		return -1;
+	written += len;
+	format += len;
         }
         format++;
     }
     va_end(parameters);
-    return written
+    return written;
 }

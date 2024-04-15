@@ -1,3 +1,7 @@
 *.d
 *.kernel
 *.o
+*.iso
+sysroot/*
+*.a
+iso*/*

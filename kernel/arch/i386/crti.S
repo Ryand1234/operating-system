@@ -3,12 +3,12 @@
 .type _init, @function
 _init:
     push %ebp
-    mov %esp, %ebp
+    movl %esp, %ebp
 
 .section .fini
 .global _fini
 .type _fini, @function
 _fini:
     push %ebp
-    move %esp, %ebp
+    movl %esp, %ebp
 

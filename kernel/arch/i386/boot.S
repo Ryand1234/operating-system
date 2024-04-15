@@ -9,7 +9,7 @@
 .section .multiboot
 .align 4
 .long MAGIC
-.long MAGIC
+.long FLAGS
 .long CHECKSUM
 
 # Reserve stack for initial thread
