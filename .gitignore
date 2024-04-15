@@ -4,3 +4,4 @@
 *.iso
 sysroot/*
 *.a
+iso*/*
