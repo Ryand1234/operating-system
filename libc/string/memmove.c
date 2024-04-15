@@ -8,9 +8,9 @@ void* memmove(void* desptr, const void* srcptr, size_t size) {
             dest[i] = src[i];
         }
     } else {
-        for(size_t i = size; i >= 0; i--) {
+        for(size_t i = size; i > 0; i--) {
             dest[i-1] = src[i-1];
         }
     }
-    return destptr;
+    return desptr;
 }

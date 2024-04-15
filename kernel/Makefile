@@ -1,7 +1,7 @@
 DEFAULT_HOST!=../default-host.sh
-HOST?=DEFAULT_HOST
+HOST?=${DEFAULT_HOST}
 HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
- 
+
 CFLAGS?=-O2 -g
 CPPFLAGS?=
 LDFLAGS?=
@@ -20,15 +20,17 @@ LIBS:=$(LIBS) -nostdlib -lk -lgcc
  
 ARCHDIR=arch/$(HOSTARCH)
  
-include $(ARCHDIR)/make.config
- 
+-include $(ARCHDIR)/make.config
+
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 LDFLAGS:=$(LDFLAGS) $(KERNEL_ARCH_LDFLAGS)
 LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
  
 KERNEL_OBJS=\
-$(KERNEL_ARCH_OBJS) \
+$(KERNEL_ARCH_OBJ) \
+${ARCHDIR}/boot.o \
+${ARCHDIR}/tty.o \
 kernel/kernel.o \
  
 OBJS=\
@@ -37,7 +39,7 @@ $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
- 
+
 LINK_LIST=\
 $(LDFLAGS) \
 $(ARCHDIR)/crti.o \
@@ -47,7 +49,7 @@ $(LIBS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
  
-.PHONY: all clean install install-headers install-kernel
+.PHONY: all clean install install-headers install-kernel info
 .SUFFIXES: .o .c .S
  
 all: myos.kernel
