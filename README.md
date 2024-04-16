@@ -10,6 +10,7 @@ A simple skeleton os which is light weight and efficient to do task on systems w
 ## Todo
 - [x] Formatted Printing
 - [x] String Functions
+- [ ] Stack Smashing Protector
 - [ ] Memory Management
 - [ ] GDT
 - [ ] Interrupts
