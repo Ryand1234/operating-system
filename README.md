@@ -7,6 +7,16 @@ A simple skeleton os which is light weight and efficient to do task on systems w
 - ios.sh: It calls build script internally to first create object files and then create a isodir folder containing compiled kernal and create .iso file.
 - qemu.sh: It calls iso script internally to compile kernel and then it calls the qemu system to run the .iso file.
 
+## Todo
+- [x] Formatted Printing
+- [x] String Functions
+- [ ] Memory Management
+- [ ] GDT
+- [ ] Interrupts
+- [ ] Keyboard Support
+- [ ] FileSystem
+More tasks will be added once above are done 
+
 # Contribution
 ## Fork this repository
 
