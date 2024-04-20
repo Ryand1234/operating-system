@@ -14,9 +14,9 @@ Cheaky OS is a simple skeleton OS designed to be lightweight and efficient, perf
 ## 📝 Todo
 - [x] Formatted Printing
 - [x] String Functions
+- [x] GDT
 - [ ] Stack Smashing Protector
 - [ ] Memory Management
-- [ ] GDT
 - [ ] Interrupts
 - [ ] Keyboard Support
 - [ ] FileSystem
