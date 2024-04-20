@@ -16,7 +16,6 @@ struct gdtdesc {
 	uint8_t access_bytes;
 	uint8_t flags:4;
 	uint8_t limit16_19;
-	uint8_t base24_31;
 } __attribute__ ((packed));
 
 

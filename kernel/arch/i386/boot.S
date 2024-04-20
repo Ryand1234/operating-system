@@ -27,6 +27,11 @@ _start:
     movl $stack_top, %esp
     call _init
     call gdt_init
+    mov $0x10, %ax
+    mov %ax, %ds
+    mov %ax, %es
+    mov %ax, %fs
+    mov %ax, %gs
     call kernel_main
     cli
 1: hlt
