@@ -20,6 +20,7 @@ Cheaky OS is a simple skeleton OS designed to be lightweight and efficient, perf
 - [ ] Interrupts
 - [ ] Keyboard Support
 - [ ] FileSystem
+
 And that's just the beginning! More tasks will be added once these are tackled. Are you up for the challenge?
 
 ## Setup
