@@ -29,8 +29,7 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
-kernel/kernel.o \
-gdt/gdt.o
+kernel/kernel.o 
 
 OBJS=\
 $(ARCHDIR)/crti.o \
@@ -70,7 +69,8 @@ clean:
 	rm -f myos.kernel
 	rm -f $(OBJS) *.o */*.o */*/*.o
 	rm -f $(OBJS:.o=.d) *.d */*.d */*/*.d
-
+	rm -f ${ARCHDIR} *.o */*.o */*/*/*.o
+	rm -f kernel/kernel/ *.d *.o
 install: install-headers install-kernel
 
 install-headers:

@@ -1,9 +1,10 @@
 #include<string.h>
-#include "gdt.h"
+#include "x86.h"
 #include<stdio.h>
 struct gdtdesc kgdt[5];
 struct gdtr kgdtr;
-
+struct idtr kidtr;
+struct idtdesc kidt[IDTSIZE];
 
 void read_gdtr(uint32_t* tgdtr) {
     asm("sgdt %0" : "=m" (*tgdtr));
@@ -12,6 +13,7 @@ void read_gdtr(uint32_t* tgdtr) {
 void load_gdt(struct gdtr *gdtr) {
 	asm volatile("lgdt %0" : : "m" (*gdtr));
 }
+
 void gdt_init(void) {
 
 	create_gdt_descriptor(0x0, 0x0, 0x0, 0x0, &kgdt[0]);
@@ -38,4 +40,18 @@ void create_gdt_descriptor(uint32_t base, uint32_t limit, uint8_t access, uint8_
 	desc->limit16_19 = (limit & 0xF) >> 16;
 	desc->flags = (flags & 0xF);
 	return;
+}
+
+void create_idt_descriptor(uint16_t select, uint32_t offset, uint16_t type, struct idtdesc * desc) {
+	desc->offset0_15 = (offset & 0xFFFF);
+	desc->select = select;
+	desc->type = type;
+	desc->offset16_31 = (offset & 0xFFFF0000) >> 16;
+	return;
+}
+
+
+
+
+void init_idt(void) {
 }
