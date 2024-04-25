@@ -13,3 +13,19 @@ int putchar(int ic) {
 #endif
     return ic;
 }
+
+void new_line() {
+#if defined(__is_libk)
+	terminal_new_line();
+#else
+	// implement somthing
+#endif
+}
+
+void new_tab() {
+#if defined(__is_libk)
+	terminal_new_tab();
+#else
+	//implement somthing
+#endif
+}

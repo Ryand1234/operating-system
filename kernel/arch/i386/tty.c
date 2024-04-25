@@ -32,6 +32,19 @@ void set_color(uint8_t color) {
     terminal_color = color;
 }
 
+void terminal_new_line(void) {
+	terminal_column = 0;
+	terminal_row++;
+}
+
+void terminal_new_tab(void) {
+	terminal_column += 4;
+	if(terminal_column >= VGA_WIDTH) {
+		terminal_row++;
+		terminal_column = (terminal_column % VGA_WIDTH);
+	}
+}
+
 void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = vga_entry(c, color);
