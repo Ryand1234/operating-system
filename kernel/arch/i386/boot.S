@@ -32,6 +32,8 @@ _start:
     mov %ax, %es
     mov %ax, %fs
     mov %ax, %gs
+    call init_idt
+    call init_pic
     call kernel_main
     cli
 1: hlt
