@@ -73,7 +73,7 @@ int printf(const char* restrict format, ...) {
                 format++;
             }
             size_t amount = 1;
-            while(format[amount] && format[amount] != '%' && format[amount] != '\\' ) 
+            while(format[amount] && format[amount] != '%') 
                 amount++;
             if(maxrem < amount) {
                 // return error
@@ -89,9 +89,7 @@ int printf(const char* restrict format, ...) {
         }
         
         const char* format_begin_at = format++;
-        if(format_begin_at[0] == '\\' && format[0] == 'n') {
-		new_line();
-	} else if(format_begin_at[0] == '%' && format[0] == 'c') {
+        if(format_begin_at[0] == '%' && format[0] == 'c') {
             char c = (char) va_arg(parameters, int);
             if(!maxrem)
                 return -1;
