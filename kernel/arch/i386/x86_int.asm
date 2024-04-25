@@ -20,7 +20,7 @@
 
 %macro INTERRUPT 1
 global _asm_int_%1
-_asm_init_%1:
+_asm_int_%1:
 	SAVE_REGS
 	push %1
 	call isr_default_int
@@ -34,4 +34,4 @@ _asm_init_%1:
 extern isr_default_int
 
 INTERRUPT 1
-INTERRUPT 2
+INTERRUPT 0
