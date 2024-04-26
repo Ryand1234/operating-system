@@ -1,10 +1,12 @@
 #include<string.h>
-#include "x86.h"
+#include<arch/i386/x86.h>
 #include<stdio.h>
 struct gdtdesc kgdt[5];
 struct gdtr kgdtr;
 struct idtr kidtr;
-struct idtdesc kidt[1];
+struct idtdesc kidt[IDTSIZE];
+uint8_t stack[STACKSIZE];
+
 
 void read_gdtr(uint32_t* tgdtr) {
     asm("sgdt %0" : "=m" (*tgdtr));
@@ -47,6 +49,7 @@ void create_gdt_descriptor(uint32_t base, uint32_t limit, uint8_t access, uint8_
 }
 
 void create_idt_descriptor(uint16_t select, uint32_t offset, uint16_t type, struct idtdesc * desc) {
+	printf("select: %d, offset: %d, type: %d\n", select, offset, type);
 	desc->offset0_15 = (offset & 0xFFFF);
 	desc->select = select;
 	desc->type = type;
@@ -56,7 +59,7 @@ void create_idt_descriptor(uint16_t select, uint32_t offset, uint16_t type, stru
 
 extern void _asm_int_0();
 extern void _asm_int_1();
-
+extern void isr0();
 
 void outb(uint32_t ad, uint8_t v)
 {
@@ -73,6 +76,7 @@ uint8_t inb(uint32_t ad)
 void isr_default_int(int id)
 {
 	printf("default int %d", id);
+	asm volatile("hlt");
 }
 
 void init_pic(void)
@@ -81,7 +85,7 @@ void init_pic(void)
 	outb(0xA0, 0x11);
 
 	outb(0x21, 0x20);
-	outb(0xA1, 0x70);
+	outb(0xA1, 0x28);
 
 	outb(0x21, 0x04);
 	outb(0xA1, 0x02);
@@ -91,22 +95,53 @@ void init_pic(void)
 
 	outb(0x21, 0x0);
 	outb(0xA1, 0x0);
+	printf("PIC initialised\n");
 }
 
 
 
 void init_idt(void) {
-	//int i;
-/*	for(i = 0; i < IDTSIZE; i++)
-	{
-		init_idt_descriptor(0x01, (uint32_t)_asm_schedule, INTGATE, &kidt[i]);
-	} */
 
-	create_idt_descriptor(0x08, (uint32_t) _asm_int_1, INTGATE, &kidt[0]);
-//	init_idt_descriptor(0x08, (uint32_t) _asm_init
-
-	kidtr.limit = sizeof(kidt) - 1;
+	kidtr.limit = sizeof(struct idtdesc) * IDTSIZE - 1;
 	kidtr.base = (uint32_t)&kidt;
 
 	load_idt(&kidtr);
+	printf("IDT initialized\n");
 }
+
+struct regs{
+    unsigned int gs, fs, es, ds;      /* pushed the segs last */
+    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
+    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
+    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
+};
+
+void *irq_routines[16] ={
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+};
+
+void fault_handler(struct regs *r)
+{
+	printf("ERROR everywhere\n");
+    asm("hlt");
+	/* Is this a fault whose number is from 0 to 31? */
+    if (r->int_no < 32)
+    {
+	    printf("ERROR here\n");
+	    asm("hlt");
+//        bsodmsg(exception_messages[r->int_no]);
+    } else {
+	    printf("ERROR there\n");
+	    asm("hlt");
+    }
+}
+
+void irq_install_handler(int irq, void (*handler)(struct regs *r)){
+    irq_routines[irq] = handler;
+}
+
+void setup_isr(void) {
+	create_idt_descriptor(0x08, (uint32_t)_asm_int_1, INTGATE, &kidt[0]);
+}
+

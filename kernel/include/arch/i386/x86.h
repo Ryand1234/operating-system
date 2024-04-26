@@ -30,14 +30,18 @@ struct idtdesc {
 	uint16_t offset16_31;
 } __attribute__ ((packed));
 
+
 #define GDTSIZE 0xFF
-#define IDTSIZE 0xFF
+#define IDTSIZE 1
+#define STACKSIZE 4096
+
 
 #define GDT_BASE 0x00000
 #define IDT_BASE 0x00000
 
-#define INTGATE 0x8E00
-#define TRAPGATE 0xEF00
+
+#define INTGATE 0x8E
+#define TRAPGATE 0xEF
 
 #define DESC_NULL 0x0000
 #define DESC_KERNEL_CODE 0x0008
@@ -58,5 +62,6 @@ void install_irq(unsigned int num, unsigned int irq);
 
 void init_pic(void);
 
+void setup_isr(void);
 
 #endif

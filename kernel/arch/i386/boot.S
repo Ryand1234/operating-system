@@ -19,6 +19,7 @@ stack_bottom:
 .skip 16384
 stack_top:
 
+
 #kernel entry point
 .section .text
 .global _start
@@ -26,18 +27,13 @@ stack_top:
 _start:
     movl $stack_top, %esp
     call _init
-    call kernel_main
     call gdt_init
-    call stack_init
     mov $0x10, %ax
     mov %ax, %ds
     mov %ax, %es
     mov %ax, %fs
     mov %ax, %gs
-    call init_idt
-    call init_pic
-    hlt
-    call divide_by_zero
+    call kernel_main
 1: hlt
     jmp 1b
 
