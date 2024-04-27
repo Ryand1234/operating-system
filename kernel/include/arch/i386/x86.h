@@ -26,13 +26,14 @@ struct idtr {
 struct idtdesc {
 	uint16_t offset0_15;
 	uint16_t select;
-	uint16_t type;
+	uint8_t alwaysZero;
+	uint8_t access_gran;
 	uint16_t offset16_31;
 } __attribute__ ((packed));
 
 
 #define GDTSIZE 0xFF
-#define IDTSIZE 1
+#define IDTSIZE 0xFF
 #define STACKSIZE 4096
 
 
@@ -56,7 +57,7 @@ void init_gdt(void);
 
 void init_idt(void);
 
-void create_idt_descriptor(uint16_t, uint32_t, uint16_t, struct idtdesc *);
+void create_idt_descriptor(uint16_t, uint32_t, uint8_t, struct idtdesc *);
 
 void install_irq(unsigned int num, unsigned int irq);
 

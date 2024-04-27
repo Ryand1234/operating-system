@@ -7,14 +7,17 @@ void divide_by_zero(void);
 void kernel_main(void) {
     terminal_initialize();
     init_idt();
-    setup_isr();
+   setup_isr();
+ //   isrs_install();
     printf("Terminal initialization compelete\n");
     printf("Tesing formating, %c \t%d %s\n", 'Q', 1234, "Hello world from format");
     divide_by_zero();
+    printf("DONE");
 }
 
 void divide_by_zero(void) {
-//	asm("hlt");
+	//asm("hlt");
 	int i = 10/0;
+
 	printf("%d", i);
 }

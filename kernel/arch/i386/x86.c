@@ -4,7 +4,7 @@
 struct gdtdesc kgdt[5];
 struct gdtr kgdtr;
 struct idtr kidtr;
-struct idtdesc kidt[IDTSIZE];
+struct idtdesc kidt[256];
 uint8_t stack[STACKSIZE];
 
 
@@ -48,11 +48,12 @@ void create_gdt_descriptor(uint32_t base, uint32_t limit, uint8_t access, uint8_
 	return;
 }
 
-void create_idt_descriptor(uint16_t select, uint32_t offset, uint16_t type, struct idtdesc * desc) {
+void create_idt_descriptor(uint16_t select, uint32_t offset, uint8_t type, struct idtdesc * desc) {
 	printf("select: %d, offset: %d, type: %d\n", select, offset, type);
 	desc->offset0_15 = (offset & 0xFFFF);
 	desc->select = select;
-	desc->type = type;
+	desc->access_gran = type;
+	desc->alwaysZero = 0;
 	desc->offset16_31 = (offset & 0xFFFF0000) >> 16;
 	return;
 }
@@ -99,12 +100,14 @@ void init_pic(void)
 }
 
 
+extern void idt_load();
 
 void init_idt(void) {
 
-	kidtr.limit = sizeof(struct idtdesc) * IDTSIZE - 1;
+	kidtr.limit = (sizeof(struct idtdesc) * 256) - 1;
 	kidtr.base = (uint32_t)&kidt;
-
+	//memset(&kidt, 0, sizeof(struct idtdesc) * 256);
+//	idt_load();
 	load_idt(&kidtr);
 	printf("IDT initialized\n");
 }
@@ -124,8 +127,7 @@ void *irq_routines[16] ={
 void fault_handler(struct regs *r)
 {
 	printf("ERROR everywhere\n");
-    asm("hlt");
-	/* Is this a fault whose number is from 0 to 31? */
+    	/* Is this a fault whose number is from 0 to 31? */
     if (r->int_no < 32)
     {
 	    printf("ERROR here\n");
@@ -142,6 +144,12 @@ void irq_install_handler(int irq, void (*handler)(struct regs *r)){
 }
 
 void setup_isr(void) {
-	create_idt_descriptor(0x08, (uint32_t)_asm_int_1, INTGATE, &kidt[0]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[0]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[1]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[2]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[3]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[4]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[5]);
+	create_idt_descriptor(0x08, (uint32_t)isr0, INTGATE, &kidt[6]);
 }
 
