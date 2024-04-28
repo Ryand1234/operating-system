@@ -19,6 +19,7 @@ stack_bottom:
 .skip 16384
 stack_top:
 
+
 #kernel entry point
 .section .text
 .global _start
@@ -33,7 +34,6 @@ _start:
     mov %ax, %fs
     mov %ax, %gs
     call kernel_main
-    cli
 1: hlt
     jmp 1b
 
