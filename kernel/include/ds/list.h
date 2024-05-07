@@ -15,7 +15,7 @@
 		list->next = list;
 		list->prev = list;
 	}
-76tfx
+
 	static inline void list_add(struct list_head *newItem, struct list_head *list)
 	{
 		newItem->prev = list;
@@ -38,17 +38,17 @@
 	}
 
 	#define list_entry(ptr, type, member) \
-		(type*) ((char*) ptr - (char*) &((type*)0)->member)<F3> hj b78
+		(type*) ((char*) ptr - (char*) &((type*)0)->member)
 
 	#define list_first_entry(head, type, member) \
-		list_entry((head)->ptr, type, member)
+		list_entry((head)->next,  type, member)
 	#define list_for_each(p, head) \
 		for(p = (head)->next; p != (head); p = p->next)
 	#define list_for_each_safe(p, n, head) \
-		for(p = (head)=>next; n = p->next; p != (head); p = n; n = n->next)
+		for(p = (head)->next; n = p->next; p != (head); p = n; n = n->next)
 	#define list_for_each_entry(p, head, member) \
 		for(p = list_entry((head)->next, typeof(*p), member); 	\
 			&p->member != (head);				\
-			p = list_entry(p->member.next, typeof(*p), member) \
+			p = list_entry(p->member.next, typeof(*p), member) 
 
 #endif

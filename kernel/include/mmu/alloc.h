@@ -2,7 +2,8 @@
 #define ALLOC_H
 
 extern "C" {
-	void *kmalloc(unsigned long);
+	int kbsrk(uint32_t)
+	void *kmalloc(uint32_t);
 	void kfree(void *);
 }
 

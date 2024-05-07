@@ -1,14 +1,13 @@
-#include<vmm.h>
+#include<mmu/vmm.h>
 #include<stdio.h>
-
-extern "C" {
-
+#include<ds/list.h>
+#include<mmu/alloc.h>
 	char *kern_heap;
-	list_head kern_free_vm;
+	struct list_head kern_free_vm;
 	uint32_t *pd0 = (uint32_t *) KERN_PDIR;
 	char *pg0 = (char*) 0;
-	char *pg1 = (char*) KERN_PG_!;
-	char *pg1_end = (char*) KERN_PG_!_LIM;
+	char *pg1 = (char*) KERN_PG_1;
+	char *pg1_end = (char*) KERN_PG_1_LIM;
 	uint8_t mem_bitmap[RAM_MAXPAGE /8];
 
 	uint32_t kmalloc_used = 0;
@@ -18,7 +17,7 @@ extern "C" {
 		int byte, bit;
 		int page = -1;
 
-		for(byte = 0; byte < RAM_SIZE / 8; byte++)
+		for(byte = 0; byte < RAM_MAXSIZE / 8; byte++)
 		{
 			if(mem_bitmap[byte] != 0xFF)
 			{
@@ -35,10 +34,10 @@ extern "C" {
 		return (char*) -1;
 	}
 
-	page* get_page_from_heap(void)
+	struct page* get_page_from_heap(void)
 	{
-		page *pg;
-		vm_area *area;
+		struct page *pg;
+		struct vm_area *area;
 		char *v_addr, *p_addr;
 
 		p_addr = get_page_frame();
@@ -46,11 +45,11 @@ extern "C" {
 			printf("PANIC: get_page_from_heap(); no page frame available. Can't work!\n");
 		}
 
-		if(list_empty(&kern_free_vm)) {
+		if(is_list_empty(&kern_free_vm)) {
 			printf("PANIC: get_page_from_heap(): no memory left in page heap. System can't work\n");
 		}
 
-		area = list_first_entry(&kern_free_vm, vm_area, list);
+		area = list_first_entry(&kern_free_vm, struct m_area, list);
 		v_addr = area->vm_start;
 
 		area->vm_start += PAGESIZE;
@@ -62,7 +61,7 @@ extern "C" {
 
 		pd0_add_page(v_addr, p_addr, 0);
 
-		pg = (page*) kmalloc(sizeof(page));
+		pg = (struct page*) kmalloc(sizeof(struct page));
 		pg->v_addr = v_addr;
 		pg->p_addr = p_addr;
 		pg->list.next = 0;
@@ -118,8 +117,8 @@ extern "C" {
 	void memory_init(uint32_t high_mem)
 	{
 		int pg, pg_limit;
-		unsigned long i;
-		struct vm_area *p, *pm;
+		uint32_t i;
+		struct vm_area *p, *pd;
 
 		pg_limit = (high_mem * 1024) / PAGESIZE;
 
@@ -129,7 +128,7 @@ extern "C" {
 		for(pg = pg_limit/8; pg < RAM_MAXPAGE /8; pg++)
 			mem_bitmap[pg] = 0xFF;
 
-		for(pg = PAGE(0x0); pg < (int)(PAGE((uint32_t) pg1_end)); pg++)
+		/*for(pg = PAGE(0x0); pg < (uint32_t)(PAGE((uint32_t) pg1_end)); pg++)
 		{
 			set_page_frame_used(pg);
 		}
@@ -142,7 +141,7 @@ extern "C" {
 			pd0[i] = ((uint32_t) pg1 + PAGESIZE*i (PG_PRESENT | PG_WRITE));
 		}
 
-		pd0[1023] = ((uint32_t) pd0 | (PG_PRESENT | PG_WRITE));
+		pd0[1023] = ((uint32_t) pd0 | (PG_PRESENT | PG_WRITE));*/
 
 		asm(" mov %0, %%eax \n \
 			mov %%eax, %%cr3 \n \
@@ -165,11 +164,11 @@ extern "C" {
 		return;
 	}
 
-	struct page_directory *pd_create(void)
+	/*struct page_directory *pd_create(void)
 	{
 		struct page_directory *pd;
 		uint32_t *pdir;
-		int i;
+		uint32_t i;
 
 		pd = (struct page_directory *) kmalloc(sizeof(struct page_directory));
 		pd->base = get_page_from_heap();
@@ -183,4 +182,18 @@ extern "C" {
 		INIT_LIST_HEAD(&pd->pt);
 		return pd;
 	}
-}
+
+	struct page_directory *pd_copy(struct page_directory * pdFather)
+	{
+		struct page_directory *pd;
+		uint32_t *pdir;
+		int ;
+
+		pd = (struct page_directory *) kmalloc(sizeof(struct page_directory));
+		pd->base = get_page_from_heap();
+
+		pdir = (uint32_t *) pd->base->v_addr;
+
+		
+	}*/
+

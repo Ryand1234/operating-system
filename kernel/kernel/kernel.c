@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<kernel/tty.h>
 #include<arch/i386/x86.h>
+#include<mmu/alloc.h>
 
 void divide_by_zero(void);
 
@@ -11,6 +12,8 @@ void kernel_main(void) {
  //   isrs_install();
     printf("Terminal initialization compelete\n");
     printf("Tesing formating, %c \t%d %s\n", 'Q', 1234, "Hello world from format");
+    char* test = kmalloc(20);
+    printf("Memory Address %d\n", test);
     divide_by_zero();
     printf("DONE");
 }

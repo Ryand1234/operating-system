@@ -1,35 +1,34 @@
 #ifndef VMM_H
-#ifdef VMM_H
+#define VMM_H
+
 
 #include<mmu/alloc.h>
 #include<ds/list.h>
 #include<arch/i386/x86.h>
 #include<stddef.h>
 
-extern "C" {
-
 struct page {
 	char *v_addr;
 	char *p_addr;
-	list_head list;
+	struct list_head list;
 };
 
 struct page_directory {
-	page *base;
-	list_head pt;
+	struct page *base;
+	struct list_head pt;
 };
 
 struct vm_area {
 	char *vm_start;
 	char *vm_end;
-	list_head list;
+	struct list_head list;
 };
 
-typedef page_directory proc_memory;
+typedef struct page_directory proc_memory;
 
 extern char *kern_heap;
 
-extern list_head kern_free_vm;
+extern struct list_head kern_free_vm;
 
 extern uint32_t *pd0;
 
@@ -66,7 +65,5 @@ struct kmalloc_header {
 	unsigned long used:1;
 } __attribute__ ((packed));
 
-}
 
 #endif
-
