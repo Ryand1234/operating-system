@@ -1,7 +1,6 @@
-#include<mmu.h>
+#include<mmu/vmm.h>
 #include<stdio.h>
-
-extern "C" {
+#include<stdint.h>
 	void *kmalloc(uint32_t size)
 	{
 		if(size <= 0)
@@ -13,15 +12,15 @@ extern "C" {
 		uint32_t realsize = sizeof(struct kmalloc_header) + size;
 		if(realsize < KMALLOC_MINSIZE)
 		{
-			realsize = KMALLOCSIZE;
+			realsize = KMALLOC_MINSIZE;
 		}
 
-		chunk = (struct *kmalloc_header) KERN_HEAP;
+		struct kmalloc_header *chunk = (struct kmalloc_header*) KERN_HEAP;
 		while(chunk->used || chunk->size < realsize)
 		{
 			printf("chunk: %d, %d\n", chunk->used, chunk->size);
-			chunk = (struct *KMALLOC_HEADER) ((char*)chunk + chunk->size);
-			if(chunk == (struct *KMALLOC_HEADER) kern_heap)
+			chunk = (struct kmalloc_header*) ((char*)chunk + chunk->size);
+			if(chunk == (struct kmalloc_header*) kern_heap)
 			{
 				if((int)ksbrk(realsize/PAGESIZE) < 0)
 				{
@@ -29,7 +28,7 @@ extern "C" {
 					asm("hlt");
 					return 0;
 				}
-			} else if(chunk > (struct *KMALLOC_HEADER) kern_heap)
+			} else if(chunk > (struct kmalloc_header*) kern_heap)
 			{
 				printf("Got address %d while heap limit is %d", chunk, kern_heap);
 				asm("hlt");
@@ -41,8 +40,8 @@ extern "C" {
 		{
 			chunk->used = 1;
 		} else {
-			other = (struct *kmalloc_header)((chunk*) chunk + realsize)
-			other->size = chunk-size - realsize;
+			struct kmalloc_header* other = (struct kmalloc_header*)((char*) chunk+ realsize);
+			other->size = (uint32_t) (chunk-size - realsize);
 			other->used = 0;
 			chunk->size = realsize;
 			chunk->used = 1;
@@ -52,4 +51,4 @@ extern "C" {
 
 		return (char *) chunk + sizeof(struct kmalloc_header);
 	}
-}
+

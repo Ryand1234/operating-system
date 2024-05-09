@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef DS_LIST_H
+#define DS_LIST_H
 
 	struct list_head {
 		struct list_head *next, *prev;

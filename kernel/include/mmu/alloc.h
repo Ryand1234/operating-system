@@ -1,10 +1,10 @@
-#ifdef ALLOC_H
-#define ALLOC_H
+#ifndef MMU_ALLOC_H
+#define MMU_ALLOC_H
 
-extern "C" {
-	int kbsrk(uint32_t)
-	void *kmalloc(uint32_t);
-	void kfree(void *);
-}
+#include<stdint.h>
+void *ksbrk(uint32_t);
+void *kmalloc(uint32_t);
+void kfree(void *);
+
 
 #endif

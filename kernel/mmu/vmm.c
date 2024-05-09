@@ -1,7 +1,4 @@
 #include<mmu/vmm.h>
-#include<stdio.h>
-#include<ds/list.h>
-#include<mmu/alloc.h>
 	char *kern_heap;
 	struct list_head kern_free_vm;
 	uint32_t *pd0 = (uint32_t *) KERN_PDIR;
@@ -49,7 +46,7 @@
 			printf("PANIC: get_page_from_heap(): no memory left in page heap. System can't work\n");
 		}
 
-		area = list_first_entry(&kern_free_vm, struct m_area, list);
+		area = list_first_entry(&kern_free_vm, struct vm_area, list);
 		v_addr = area->vm_start;
 
 		area->vm_start += PAGESIZE;
@@ -70,7 +67,7 @@
 		return pg;
 	}
 
-	int release_page_from_heap(char *v_addr) 
+/*	int release_page_from_heap(char *v_addr) 
 	{
 		struct vm_area *next_area, *prev_area, *new_area;
 		char *p_addr;
@@ -86,8 +83,9 @@
 		pd_remove_page(v_addr);
 
 		list_for_each_entry(next_area, &kern_free_vm, list) {
-			if(next_area->vm_start > v_addr)
+			if(next_area->vm_start > v_addr){
 				break;
+			}
 		}
 
 		prev_area = list_entry(next_area->list.prev, struct vm_area, list);
@@ -113,7 +111,7 @@
 
 		return 0;
 	}
-
+*/
 	void memory_init(uint32_t high_mem)
 	{
 		int pg, pg_limit;
@@ -122,11 +120,13 @@
 
 		pg_limit = (high_mem * 1024) / PAGESIZE;
 
-		for(pg = 0; pg < pg_limit/8; pg++)
+		for(pg = 0; pg < pg_limit/8; pg++){
 			mem_bitmap[pg] = 0;
+		}
 		
-		for(pg = pg_limit/8; pg < RAM_MAXPAGE /8; pg++)
+		for(pg = pg_limit/8; pg < RAM_MAXPAGE /8; pg++){
 			mem_bitmap[pg] = 0xFF;
+		}
 
 		/*for(pg = PAGE(0x0); pg < (uint32_t)(PAGE((uint32_t) pg1_end)); pg++)
 		{
@@ -143,14 +143,15 @@
 
 		pd0[1023] = ((uint32_t) pd0 | (PG_PRESENT | PG_WRITE));*/
 
-		asm(" mov %0, %%eax \n \
+		asm volatile(" mov %0, %%eax \n \
 			mov %%eax, %%cr3 \n \
 			mov %%cr4, %%eax \n \
-			or %3, %%eax \n \
+			or %2, %%eax \n \
 			mov %%eax, %%cr4 \n \
 			mov %%cr0, %%eax \n \
 			or %1, %%eax \n \
-			mov %%eax, %%cr0":: "m"(pd0), "1"(PAGING_FLAG), "i"(PSE_FLAG));
+			mov %%eax, %%cr0":: "m"(pd0), "i"(PAGING_FLAG), "i"(PSE_FLAG));
+
 
 		kern_heap = (char*) KERN_HEAP;
 		ksbrk(1);

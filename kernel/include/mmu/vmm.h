@@ -1,12 +1,10 @@
-#ifndef VMM_H
-#define VMM_H
+#ifndef MMU_VMM_H
+#define MMU_VMM_H
 
 
 #include<mmu/alloc.h>
 #include<ds/list.h>
 #include<arch/i386/x86.h>
-#include<stddef.h>
-
 struct page {
 	char *v_addr;
 	char *p_addr;
