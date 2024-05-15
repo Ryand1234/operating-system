@@ -34,7 +34,7 @@ extern uint8_t mem_bitmap[];
 
 extern uint32_t kmalloc_used;
 
-#define set_page_frame_used(page) mem_bitmap[(uint32_t)page/8] != (1 << (((uint32_t) page)%8))
+#define set_page_frame_used(page) mem_bitmap[(uint32_t)page/8] |= (1 << (((uint32_t) page)%8))
 
 #define release_page_frame(p_addr) mem_bitmap[((uint32_t)p_addr/PAGESIZE)/8] &= ~(1 <<(((uint32_t) p_addr/PAGESIZE)%8))
 
@@ -59,8 +59,8 @@ char* get_p_addr(char*);
 #define KMALLOC_MINSIZE 16
 
 struct kmalloc_header {
-	unsigned long size:31;
-	unsigned long used:1;
+	uint32_t size:31;
+	uint32_t used:1;
 } __attribute__ ((packed));
 
 

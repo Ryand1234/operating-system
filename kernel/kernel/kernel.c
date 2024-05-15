@@ -13,8 +13,9 @@ void kernel_main(void) {
     printf("Terminal initialization compelete\n");
     printf("Tesing formating, %c \t%d %s\n", 'Q', 1234, "Hello world from format");
     memory_init(2048);
+    /*
     char* test = (char*) kmalloc(20);
-    printf("Memory Address %d\n", test);
+    printf("Memory Address %d\n", test);*/
     divide_by_zero();
     printf("DONE");
 }

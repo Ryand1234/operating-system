@@ -51,8 +51,8 @@ struct idtdesc {
 #define	KERN_BASE			0x00100000
 #define KERN_PG_HEAP		0x00800000
 #define KERN_PG_HEAP_LIM	0x10000000
-#define KERN_HEAP			0x10000000
-#define KERN_HEAP_LIM		0x40000000
+#define KERN_HEAP			0x20000000
+#define KERN_HEAP_LIM		0x70000000
 
 
 #define KERN_PG_1			0x400000

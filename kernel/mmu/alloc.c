@@ -1,6 +1,18 @@
 #include<mmu/vmm.h>
 #include<stdio.h>
 #include<stdint.h>
+void kfree(void  *v_addr)
+{
+	printf("KFREEEEEEEE\n");
+
+}
+void *ksbrk(uint32_t n)
+{
+	//printf("BREakkkkkk\n");
+
+	struct kmalloc_header* chunk = (struct kmalloc_header *) kern_heap;
+	return chunk;
+}
 	void *kmalloc(uint32_t size)
 	{
 		if(size <= 0)
@@ -18,9 +30,10 @@
 		struct kmalloc_header *chunk = (struct kmalloc_header*) KERN_HEAP;
 		while(chunk->used || chunk->size < realsize)
 		{
-			printf("chunk: %d, %d\n", chunk->used, chunk->size);
+			//printf("chunk: %d, %d\n", chunk->used, chunk->size);
 			chunk = (struct kmalloc_header*) ((char*)chunk + chunk->size);
-			if(chunk == (struct kmalloc_header*) kern_heap)
+			printf("C: %d, S: %d, U: %d, h: %d", chunk, chunk->used, chunk->size, kern_heap);
+			if(chunk == (struct kmalloc_header*) KERN_HEAP)
 			{
 				if((int)ksbrk(realsize/PAGESIZE) < 0)
 				{
@@ -51,4 +64,5 @@
 
 		return (char *) chunk + sizeof(struct kmalloc_header);
 	}
+	
 

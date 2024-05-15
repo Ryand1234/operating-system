@@ -1,4 +1,5 @@
 #include<mmu/vmm.h>
+#include<stdio.h>
 	char *kern_heap;
 	struct list_head kern_free_vm;
 	uint32_t *pd0 = (uint32_t *) KERN_PDIR;
@@ -56,7 +57,7 @@
 			kfree(area);
 		}
 
-		pd0_add_page(v_addr, p_addr, 0);
+//		pd0_add_page(v_addr, p_addr, 0);
 
 		pg = (struct page*) kmalloc(sizeof(struct page));
 		pg->v_addr = v_addr;
@@ -112,10 +113,12 @@
 		return 0;
 	}
 */
+extern void write_cr3(uint32_t *);
+extern void write_cr0(uint32_t );
+extern uint32_t read_cr0(void);
 	void memory_init(uint32_t high_mem)
 	{
 		int pg, pg_limit;
-		uint32_t i;
 		struct vm_area *p, *pd;
 
 		pg_limit = (high_mem * 1024) / PAGESIZE;
@@ -132,8 +135,8 @@
 		{
 			set_page_frame_used(pg);
 		}
-
-		pd[0] = ((uint32_t) pg0 | (PG_PRESENT | PG_WRITE | PG_4MB));
+*/
+	/*	pd[0] = ((uint32_t) pg0 | (PG_PRESENT | PG_WRITE | PG_4MB));
 		pd[1] = ((uint32_t) pg1 | (PG_PRESENT | PG_WRITE | PG_4MB));
 
 		for(i = 2; i < 1023; i++)
@@ -142,23 +145,41 @@
 		}
 
 		pd0[1023] = ((uint32_t) pd0 | (PG_PRESENT | PG_WRITE));*/
+		uint32_t *page_dir = (uint32_t *) 0x9C000;
+		uint32_t *page_table = (uint32_t *) 0x9D000;
+		uint32_t address = 0;
+		uint32_t i;
+		for(i = 0; i < 1024; i++)
+		{
+			page_table[i] = address | 3;
+			address = address + 4096;
+		};
 
-		asm volatile(" mov %0, %%eax \n \
+		page_dir[0] = page_table;
+		page_dir[1] = page_dir[0] | 3;
+		for(i = 1; i < 1024; i++)
+		{
+			page_dir[i] = 0 | 3;
+		};
+		/*asm volatile(" mov %0, %%eax \n \
 			mov %%eax, %%cr3 \n \
 			mov %%cr4, %%eax \n \
 			or %2, %%eax \n \
 			mov %%eax, %%cr4 \n \
 			mov %%cr0, %%eax \n \
 			or %1, %%eax \n \
-			mov %%eax, %%cr0":: "m"(pd0), "i"(PAGING_FLAG), "i"(PSE_FLAG));
-
+			mov %%eax, %%cr0":: "m"(pd0), "i"(PAGING_FLAG), "i"(PSE_FLAG));*/
+		write_cr3(page_dir);
+		write_cr0(read_cr0() | 0x000000000);
+		//asm("hlt");
 
 		kern_heap = (char*) KERN_HEAP;
-		ksbrk(1);
+	//	ksbrk(1);
 
 		p = (struct vm_area*) kmalloc(sizeof(struct vm_area));
 		p->vm_start = (char*) KERN_PG_HEAP;
 		p->vm_end = (char*) KERN_PG_HEAP_LIM;
+		printf("FOUND FREE MEM: %d %d", p->vm_start, p->vm_end);
 		INIT_LIST_HEAD(&kern_free_vm);
 		list_add(&p->list, &kern_free_vm);
 
