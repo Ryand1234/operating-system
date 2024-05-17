@@ -46,7 +46,7 @@ SECTIONS
 	    }
 	 .page_tables : {
         	__page_tables_start = .;
-	        . += 4096 * 4;
+	        . += 4096 * 1;
     	}
 
 	/* The compiler may produce other sections, put them in the proper place in
