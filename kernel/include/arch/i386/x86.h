@@ -44,12 +44,40 @@ struct idtdesc {
 #define INTGATE 0x8E
 #define TRAPGATE 0xEF
 
-#define DESC_NULL 0x0000
-#define DESC_KERNEL_CODE 0x0008
-#define DESC_KERNEL_DATA 0x0010
-#define DESC_USER_CODE 0x0018
-#define DESC_USER_DATA 0x0020
+#define NUM_PAGE_TABLES 4
 
+#define	KERN_PDIR			0x00001000
+#define	KERN_STACK			0x0009FFF0
+#define	KERN_BASE			0x00100000
+#define KERN_PG_HEAP		0x00800000
+#define KERN_PG_HEAP_LIM	0x10000000
+#define KERN_HEAP			0x20000000
+#define KERN_HEAP_LIM		0x70000000
+
+extern char end;
+#define KERN_PG_1			0x400000
+#define KERN_PG_1_LIM 		0x800000
+
+
+#define	USER_OFFSET 		0x40000000
+#define	USER_STACK 			0xE0000000
+
+#define	VADDR_PD_OFFSET(addr)	((addr) & 0xFFC00000) >> 22
+#define	VADDR_PT_OFFSET(addr)	((addr) & 0x003FF000) >> 12
+#define	VADDR_PG_OFFSET(addr)	(addr) & 0x00000FFF
+#define PAGE(addr)		(addr) >> 12
+
+#define	PAGING_FLAG 		0x80000000	/* CR0 - bit 31 */
+#define PSE_FLAG			0x00000010	/* CR4 - bit 4  */
+
+#define PG_PRESENT			0x00000001	/* page directory / table */
+#define PG_WRITE			0x00000002
+#define PG_USER				0x00000004
+#define PG_4MB				0x00000080
+
+#define	PAGESIZE 			4096
+#define	RAM_MAXSIZE			0x100000000
+#define	RAM_MAXPAGE			0x100000
 
 void create_gdt_descriptor(uint32_t base, uint32_t limit, uint8_t access, uint8_t flags, struct gdtdesc *);
 
