@@ -49,7 +49,7 @@ struct page_directory *pd_create(void);
 int pd_destroy(struct page_directory *);
 struct page_directory *pd_copy(struct page_directory *pdFather);
 
-int pd0_add_page(char*, char*, char*);
+int pd0_add_page(char*, char*, int);
 
 int pd_ad_page(char*, char*, int, struct page_directory *);
 int pd_remove_page(char*);

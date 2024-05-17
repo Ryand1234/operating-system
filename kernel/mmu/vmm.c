@@ -1,12 +1,16 @@
 #include<mmu/vmm.h>
 #include<stdio.h>
+	extern uint32_t __page_directory;
+	extern uint32_t __page_tables_start;
 	char *kern_heap;
 	struct list_head kern_free_vm;
-	uint32_t *pd0 = (uint32_t *) KERN_PDIR;
-	char *pg0 = (char*) 0;
+	uint32_t *pd0 = (uint32_t *) (	&__page_directory);
+	char *pg0 = ((uint32_t *)&__page_tables_start);
 	char *pg1 = (char*) KERN_PG_1;
 	char *pg1_end = (char*) KERN_PG_1_LIM;
 	uint8_t mem_bitmap[RAM_MAXPAGE /8];
+
+
 
 	uint32_t kmalloc_used = 0;
 
@@ -119,8 +123,8 @@ extern uint32_t read_cr0(void);
 	void memory_init(uint32_t high_mem)
 	{
 		int pg, pg_limit;
-		struct vm_area *p, *pd;
-
+		struct vm_area *p, *pm;
+		uint32_t i;
 		pg_limit = (high_mem * 1024) / PAGESIZE;
 
 		for(pg = 0; pg < pg_limit/8; pg++){
@@ -130,51 +134,32 @@ extern uint32_t read_cr0(void);
 		for(pg = pg_limit/8; pg < RAM_MAXPAGE /8; pg++){
 			mem_bitmap[pg] = 0xFF;
 		}
-
-		/*for(pg = PAGE(0x0); pg < (uint32_t)(PAGE((uint32_t) pg1_end)); pg++)
+/*
+		for(pg = PAGE(0x0); pg < (uint32_t)(PAGE((uint32_t) pg1_end)); pg++)
 		{
 			set_page_frame_used(pg);
 		}
-*/
-	/*	pd[0] = ((uint32_t) pg0 | (PG_PRESENT | PG_WRITE | PG_4MB));
-		pd[1] = ((uint32_t) pg1 | (PG_PRESENT | PG_WRITE | PG_4MB));
+
+		pd0[0] = ((uint32_t) pg0 | (PG_PRESENT | PG_WRITE | PG_4MB));
+		pd0[1] = ((uint32_t) pg1 | (PG_PRESENT | PG_WRITE | PG_4MB));
 
 		for(i = 2; i < 1023; i++)
 		{
-			pd0[i] = ((uint32_t) pg1 + PAGESIZE*i (PG_PRESENT | PG_WRITE));
+			pd0[i] = ((uint32_t) pg1 + PAGESIZE*i | (PG_PRESENT | PG_WRITE));
 		}
 
-		pd0[1023] = ((uint32_t) pd0 | (PG_PRESENT | PG_WRITE));*/
-		uint32_t *page_dir = (uint32_t *) 0x9C000;
-		uint32_t *page_table = (uint32_t *) 0x9D000;
-		uint32_t address = 0;
-		uint32_t i;
-		for(i = 0; i < 1024; i++)
-		{
-			page_table[i] = address | 3;
-			address = address + 4096;
-		};
-
-		page_dir[0] = page_table;
-		page_dir[1] = page_dir[0] | 3;
-		for(i = 1; i < 1024; i++)
-		{
-			page_dir[i] = 0 | 3;
-		};
-		/*asm volatile(" mov %0, %%eax \n \
-			mov %%eax, %%cr3 \n \
-			mov %%cr4, %%eax \n \
-			or %2, %%eax \n \
-			mov %%eax, %%cr4 \n \
-			mov %%cr0, %%eax \n \
-			or %1, %%eax \n \
-			mov %%eax, %%cr0":: "m"(pd0), "i"(PAGING_FLAG), "i"(PSE_FLAG));*/
-		write_cr3(page_dir);
+		pd0[1023] = ((uint32_t) pd0 | (PG_PRESENT | PG_WRITE));
+		*/
+		for (int i = 0; i < 1024; i++) {
+     		   pg0[i] = (i * 0x1000) | 3; // Present, read/write
+		}
+		pd0[0] = ((uint32_t) pg0) | 3;
+		write_cr3(pd0);
 		write_cr0(read_cr0() | 0x000000000);
 		//asm("hlt");
 
-		kern_heap = (char*) KERN_HEAP;
-	//	ksbrk(1);
+		kern_heap = &end;
+		ksbrk(1);
 
 		p = (struct vm_area*) kmalloc(sizeof(struct vm_area));
 		p->vm_start = (char*) KERN_PG_HEAP;
@@ -218,4 +203,27 @@ extern uint32_t read_cr0(void);
 
 		
 	}*/
+int pd0_add_page(char *v_addr, char *p_addr, int flags)
+	{
+		uint32_t *pde;
+		uint32_t *pte;
 
+		if (v_addr > (char *) USER_OFFSET) {
+			printf("ERROR: pd0_add_page(): %d is not in kernel space !\n", v_addr);
+			return 0;
+		}
+
+		/* On verifie que la table de page est bien presente */
+		pde = (uint32_t *) (0xFFFFF000 | (((uint32_t) v_addr & 0xFFC00000) >> 20));
+		if ((*pde & PG_PRESENT) == 0) {
+			//error
+			printf("\nERROR: %d\n", *pde);
+	//		return 0;
+		}
+
+		/* Modification de l'entree dans la table de page */
+		pte = (uint32_t *) (0xFFC00000 | (((uint32_t) v_addr & 0xFFFFF000) >> 10));
+		*pte = ((uint32_t) p_addr) | (PG_PRESENT | PG_WRITE | flags);
+		set_page_frame_used(p_addr);
+		return 0;
+	}

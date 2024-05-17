@@ -44,7 +44,7 @@ struct idtdesc {
 #define INTGATE 0x8E
 #define TRAPGATE 0xEF
 
-
+#define NUM_PAGE_TABLES 4
 
 #define	KERN_PDIR			0x00001000
 #define	KERN_STACK			0x0009FFF0
@@ -54,9 +54,13 @@ struct idtdesc {
 #define KERN_HEAP			0x20000000
 #define KERN_HEAP_LIM		0x70000000
 
-
+extern char end;
 #define KERN_PG_1			0x400000
 #define KERN_PG_1_LIM 		0x800000
+
+
+#define	USER_OFFSET 		0x40000000
+#define	USER_STACK 			0xE0000000
 
 #define	VADDR_PD_OFFSET(addr)	((addr) & 0xFFC00000) >> 22
 #define	VADDR_PT_OFFSET(addr)	((addr) & 0x003FF000) >> 12

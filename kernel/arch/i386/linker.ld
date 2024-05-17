@@ -38,6 +38,17 @@ SECTIONS
 		*(.bss)
 	}
 
+	end = .;
+	. = ALIGN(4096);
+    	.page_directory : {
+        	__page_directory = .;
+	        . += 4096;
+	    }
+	 .page_tables : {
+        	__page_tables_start = .;
+	        . += 4096 * 4;
+    	}
+
 	/* The compiler may produce other sections, put them in the proper place in
 	   in this file, if you'd like to include them in the final kernel. */
 }
