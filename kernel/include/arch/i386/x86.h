@@ -92,21 +92,16 @@ void init_gdt(void);
 
 void init_idt(void);
 
-void create_idt_descriptor(uint16_t, uint32_t, uint8_t, struct idtdesc *);
+void create_idt_descriptor(uint16_t, uint32_t, uint8_t, uint8_t);
 
 
 void init_pic(void);
 
 void setup_isr(void);
 
-void irq_install_handler(int irq, void (*handler)(struct regs *r));
-void irq_uninstall_handler(int irq);
-void irq_remap(void);
-void irq_install();
-void irq_handler(struct regs *r);
+void outb(uint32_t , uint8_t );
+
+uint8_t inb(uint32_t );
 
 
-
-void keyboard_handler(struct regs *r);
-void pause();
 #endif

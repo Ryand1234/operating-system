@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<kernel/tty.h>
-//#include<arch/i386/x86.h>
+#include<arch/i386/x86.h>
+#include<arch/i386/interrupts.h>
+#include<arch/devices/keyboard.h>
 #include<mmu/vmm.h>
 #include<mmu/alloc.h>
 void divide_by_zero(void);
@@ -33,7 +35,7 @@ void kernel_main(void) {
     char* test2= (char*) kmalloc(20);
     printf("Memory Address for test2: %d\n", test2);*/
     while(inb(0x60) & 0x80){};
-    divide_by_zero();
+//    divide_by_zero();
     asm volatile("sti");
     printf("DONE\n");
     while(1) {

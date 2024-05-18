@@ -20,9 +20,11 @@ LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
 ARCHDIR=arch/$(HOSTARCH)
 MMUDIR=mmu
+DEVICEDIR=arch/devices
 
 include $(ARCHDIR)/make.config
 include ${MMUDIR}/make.config
+include ${DEVICEDIR}/make.config
 
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
@@ -32,7 +34,8 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
 kernel/kernel.o \
-${MMU_OBJS}
+${MMU_OBJS} \
+${KERNEL_DEVICE_OBJS}
 
 OBJS=\
 $(ARCHDIR)/crti.o \
@@ -41,6 +44,7 @@ $(KERNEL_OBJS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
 ${MMU_OBJS} \
+${KERNEL_DEVICE_OBJS} \
 
 LINK_LIST=\
 $(LDFLAGS) \
