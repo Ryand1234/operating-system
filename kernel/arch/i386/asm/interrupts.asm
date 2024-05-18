@@ -1,4 +1,20 @@
 
+	
+global gdt_flush
+extern kgdtr
+gdt_flush:
+    lgdt [kgdtr]        ; Load the GDT with our '_gp' which is a special pointer
+    mov ax, 0x10      ; 0x10 is the offset in the GDT to our data segment
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    jmp 0x08:flush2   ; 0x08 is the offset to our code segment: Far jump!
+flush2:
+    ret               ; Returns back to the C code!
+	
+
 global idt_load
 extern kidtr
 idt_load:
@@ -175,3 +191,72 @@ isr_common_stub:
     add esp, 8     ; Cleans up the pushed error code and pushed ISR number
     iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
 
+global irq0
+global irq1
+global irq2
+global irq3
+global irq4
+global irq5
+global irq6
+global irq7
+global irq8
+global irq9
+global irq10
+global irq11
+global irq12
+global irq13
+global irq14
+global irq15
+
+%macro make_irq 1
+	irq%1:
+		cli
+		push byte 0
+		push byte %1+32
+		jmp irq_common_stub
+%endmacro
+
+make_irq 0
+make_irq 1
+make_irq 2
+make_irq 3
+make_irq 4
+make_irq 5
+make_irq 6
+make_irq 7
+make_irq 8
+make_irq 9
+make_irq 10
+make_irq 11
+make_irq 12
+make_irq 13
+make_irq 14
+make_irq 15
+
+extern irq_handler
+
+; This is a stub that we have created for IRQ based ISRs. This calls
+; '_irq_handler' in our C code. We need to create this in an 'irq.c'
+irq_common_stub:
+    pusha
+    push ds
+    push es
+    push fs
+    push gs
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov eax, esp
+    push eax
+    mov eax, irq_handler
+    call eax
+    pop eax
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    popa
+    add esp, 8
+    iret
