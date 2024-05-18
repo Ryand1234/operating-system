@@ -14,8 +14,8 @@ struct gdtdesc {
 	uint16_t base0_15;
 	uint8_t base16_23;
 	uint8_t access_bytes;
-	uint8_t flags:4;
-	uint8_t limit16_19;
+	uint8_t granularity;
+	uint8_t base24_31;
 } __attribute__ ((packed));
 
 struct idtr {
@@ -31,6 +31,13 @@ struct idtdesc {
 	uint16_t offset16_31;
 } __attribute__ ((packed));
 
+
+struct regs{
+    unsigned int gs, fs, es, ds;      /* pushed the segs last */
+    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
+    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
+    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */
+};
 
 #define GDTSIZE 0xFF
 #define IDTSIZE 0xFF
@@ -87,10 +94,19 @@ void init_idt(void);
 
 void create_idt_descriptor(uint16_t, uint32_t, uint8_t, struct idtdesc *);
 
-void install_irq(unsigned int num, unsigned int irq);
 
 void init_pic(void);
 
 void setup_isr(void);
 
+void irq_install_handler(int irq, void (*handler)(struct regs *r));
+void irq_uninstall_handler(int irq);
+void irq_remap(void);
+void irq_install();
+void irq_handler(struct regs *r);
+
+
+
+void keyboard_handler(struct regs *r);
+void pause();
 #endif
