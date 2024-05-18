@@ -3,17 +3,30 @@
 #include<stdint.h>
 void kfree(void  *v_addr)
 {
-	printf("KFREEEEEEEE\n");
+//	printf("KFREEEEEEEE\n");
+	if(v_addr == (void*)0)
+		return ;
+
+	struct kmalloc_header *chunk, *other;
+
+	chunk = (struct kmalloc_header*) ((uint32_t)v_addr - sizeof(struct kmalloc_header));
+
+	//printf("FREE CHUNK: %d, %d, %d\n", chunk, chunk->size, chunk->used);
+
+	chunk->used = 0;
+
+	kmalloc_used -= chunk->size;
+	while((other = (struct kmalloc_header*)((char*)chunk + chunk->size))  && other < (struct kmalloc_header*) kern_heap && other->used == 0)
+	{
+		chunk->size = chunk->size + other->size;
+	}
 
 }
 void *ksbrk(uint16_t n)
 {
-	printf("BREakkkkkk\n");
-
 	struct kmalloc_header* chunk;
 	char *p_addr;
 	uint32_t i;
-	printf("KSBRK: N: %d\n", n);
 
 	if((kern_heap + (n*PAGESIZE)) > (char*) KERN_HEAP_LIM) {
 		printf("PANIC ksbrk(): no memory left\n");
@@ -62,10 +75,10 @@ void *ksbrk(uint16_t n)
 				return 0;
 			}
 			chunk = (struct kmalloc_header*) ((char*)chunk + chunk->size);
-			if(chunk == (struct kmalloc_header*) kern_heap)
+		//	printf("CHUNK:%d,  %d, %d, HEAP: %d\n", chunk->size, chunk->used, chunk, (struct kmalloc_header*)kern_heap);
+			if(chunk == (struct kmalloc_header*) kern_heap || ((struct kmalloc_header*) kern_heap - chunk) < realsize)
 			{
-				chunk = (ksbrk((realsize/PAGESIZE)+1));
-			       	if((int)chunk < 0)
+				if((int)(ksbrk((realsize/PAGESIZE)+1)) < 0)
 				{
 					printf("No memory left %d, heap: %d", chunk, kern_heap);
 					asm("hlt");

@@ -16,6 +16,11 @@ void kernel_main(void) {
     
     char* test = (char*) kmalloc(20);
     printf("Memory Address %d\n", test);
+    char* test1 = (char*) kmalloc(50);
+    printf("Memory Address for test1: %d\n", test1);
+    kfree(test);
+    char* test2= (char*) kmalloc(20);
+    printf("Memory Address for test2: %d\n", test2);
     divide_by_zero();
     printf("DONE");
 }
