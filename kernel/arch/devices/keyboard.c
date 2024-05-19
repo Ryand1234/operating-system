@@ -106,13 +106,10 @@ void keyboard_handler(struct regs *r){
 		if(scancode == 0x3a){ caps = ~caps; return;}
 		if(scancode == 0x14 || scancode == 0xE0) { ctrl = 1; return;}
 		if(scancode == 0x1c){terminal_new_line();return;}
-/*		if(scancode == 0x0e){
-			if(shell_can_backspace()){
-				printchar(kbdus[scancode]);
-			}
-			shell_backspace();
+		if(scancode == 0x0e){
+			terminal_backspace();
 			return;
-		}*/
+		}
 		if(shift || caps){
 			printf("%c",kbdus[scancode+90]);
 		}else{
