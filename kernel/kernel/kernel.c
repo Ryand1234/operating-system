@@ -14,6 +14,9 @@ void timer_handler(struct regs *r){
 
     //ONE SECOND = 18 TICKS
 }
+
+void print_welcome_screen(void);
+
 void kernel_main(void) {
     terminal_initialize();
     gdt_init();
@@ -34,12 +37,46 @@ void kernel_main(void) {
     kfree(test);
     char* test2= (char*) kmalloc(20);
     printf("Memory Address for test2: %d\n", test2);*/
-    while(inb(0x60) & 0x80){};
-//    divide_by_zero();
     asm volatile("sti");
-    printf("DONE\n");
+    terminal_initialize();
+    print_welcome_screen();
+    while(inb(0x60) & 0x80){};
+    terminal_initialize();
+    printf("cheaky>");
     while(1) {
     }
+}
+
+void print_welcome_screen()
+{
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-----****************----\n");
+	printf("\t\t\t\t\t\t-----*              *----\n");
+	printf("\t\t\t\t\t\t-----*   CheakyOS   *----\n");
+	printf("\t\t\t\t\t\t-----*    V0.2.0    *----\n");
+	printf("\t\t\t\t\t\t-----*              *----\n");
+	printf("\t\t\t\t\t\t-----*    Author:   *----\n");
+	printf("\t\t\t\t\t\t-----* Riyan Dhiman *----\n");
+	printf("\t\t\t\t\t\t-----*              *----\n");
+	printf("\t\t\t\t\t\t-----* Press Any Key*----\n");
+	printf("\t\t\t\t\t\t-----* To Continue  *----\n");
+	printf("\t\t\t\t\t\t-----****************----\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
+	printf("\t\t\t\t\t\t-------------------------\n");
 }
 
 void divide_by_zero(void) {
