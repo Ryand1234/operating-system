@@ -16,9 +16,9 @@ Cheaky OS is a simple skeleton OS designed to be lightweight and efficient, perf
 - [x] String Functions
 - [x] GDT
 - [ ] Stack Smashing Protector
-- [ ] Memory Management
-- [ ] Interrupts
-- [ ] Keyboard Support
+- [x] Memory Management
+- [x] Interrupts
+- [x] Keyboard Support
 - [ ] FileSystem
 
 And that's just the beginning! More tasks will be added once these are tackled. Are you up for the challenge?
