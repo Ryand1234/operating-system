@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<kernel/tty.h>
+#include<arch/i386/time.h>
 #include<arch/i386/x86.h>
 #include<arch/i386/interrupts.h>
 #include<arch/devices/keyboard.h>
@@ -42,6 +43,7 @@ void kernel_main(void) {
     print_welcome_screen();
     while(inb(0x60) & 0x80){};
     terminal_initialize();
+    show_time();
     printf("cheaky>");
     while(1) {
     }

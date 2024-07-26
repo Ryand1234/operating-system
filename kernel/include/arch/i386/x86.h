@@ -3,6 +3,7 @@
 
 #include<stddef.h>
 #include<stdint.h>
+#include<kernel/io.h>
 
 struct gdtr {
 	uint16_t limit;
@@ -98,10 +99,5 @@ void create_idt_descriptor(uint16_t, uint32_t, uint8_t, uint8_t);
 void init_pic(void);
 
 void setup_isr(void);
-
-void outb(uint32_t , uint8_t );
-
-uint8_t inb(uint32_t );
-
 
 #endif
