@@ -1,4 +1,5 @@
 #include<kernel/io.h>
+
 void outb(uint32_t ad, uint8_t v)
 {
 	asm volatile("outb %%al, %%dx" :: "d" (ad), "a" (v));

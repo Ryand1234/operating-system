@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<kernel/tty.h>
+#include<arch/i386/time.h>
 #include<arch/i386/x86.h>
 #include<arch/i386/interrupts.h>
 #include<arch/devices/keyboard.h>
@@ -42,6 +43,8 @@ void kernel_main(void) {
     print_welcome_screen();
     while(inb(0x60) & 0x80){};
     terminal_initialize();
+    struct kernel_time time = rtc_time();
+    printf("current time: %d:%d:%d %d:%d:%d%d\n", time.hour, time.minute, time.second, time.day, time.month, time.century, time.year);
     printf("cheaky>");
     while(1) {
     }
