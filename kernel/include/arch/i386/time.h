@@ -27,5 +27,6 @@ struct kernel_time convert_timestamp_to_datetime(uint32_t);
 uint32_t convert_datetime_to_timestamp(struct kernel_time);
 void get_system_time(struct kernel_time *);
 int set_systme_time(struct kernel_time *);
+void show_time(void);
 
 #endif

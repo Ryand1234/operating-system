@@ -52,3 +52,8 @@ struct kernel_time rtc_time() {
     convert_bcd_to_binary(&time);
     return time;
 }
+
+void show_time() {
+    struct kernel_time time = rtc_time();
+    printf("current time: %d:%d:%d %d:%d:%d%d\n", time.hour, time.minute, time.second, time.day, time.month, time.century, time.year);
+}
