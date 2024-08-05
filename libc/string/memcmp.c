@@ -12,3 +12,18 @@ int memcmp(const void* aptr, const void* bptr, size_t size) {
     }
     return 0;
 }
+
+int strcmp(const void* aptr, const void* bptr) {
+    size_t alen = strlen(aptr);
+    size_t blen = strlen(bptr);
+    if(alen != blen)
+        return 0;
+    const unsigned char* a = (const unsigned char*) aptr;
+    const unsigned char* b = (const unsigned char*) bptr;
+    for(size_t i = 0; i < alen; i++)
+    {
+        if(a[i] !=  b[i])
+            return 0;
+    }
+    return 1;
+}

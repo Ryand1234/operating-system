@@ -2,9 +2,14 @@
 #include<stddef.h>
 #include<stdint.h>
 #include<string.h>
-
+#include<mmu/alloc.h>
+#include<arch/i386/time.h>
 #include<kernel/tty.h>
 #include "vga.h"
+#include <string.h>
+
+#define PROMPT "cheaky>"
+#define PROMPT_LENGTH 7  // Length of "cheaky>"
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 100;
@@ -120,4 +125,81 @@ void terminal_write(const char* data, size_t size) {
 
 void terminal_writestring(const char* data) {
     terminal_write(data, strlen(data));
+}
+
+
+
+char* parse_command(size_t y) {
+    if (y >= VGA_HEIGHT) {
+        return NULL;  // Invalid row number
+    }
+    // Calculate the starting index for the row
+    size_t start_index = y * VGA_WIDTH;
+
+    // Check if the row starts with the prompt
+    for (size_t i = 0; i < PROMPT_LENGTH; i++) {
+        printf(terminal_buffer[start_index + i]);
+        printf(vga_entry(PROMPT[i], terminal_color));
+        if (terminal_buffer[start_index + i] != vga_entry(PROMPT[i], terminal_color)) {
+            return NULL;  // Prompt not found at the start of the row
+        }
+    }
+    // Allocate memory for the string (max length is VGA_WIDTH - PROMPT_LENGTH)
+    char* result = (char*)kmalloc(VGA_WIDTH - PROMPT_LENGTH + 1);
+    if (result == NULL) {
+        return NULL;  // Memory allocation failed
+    }
+    // Extract characters after the prompt
+    size_t j = 0;
+    for (size_t i = start_index + PROMPT_LENGTH; i < (y + 1) * VGA_WIDTH; i++) {
+        char c = terminal_buffer[i] & 0xFF;  // Extract character from VGA entry
+        if (c == '\0' || c == ' ') {
+            break;  // Stop at null terminator or space
+        }
+        result[j++] = c;
+    }
+    result[j] = '\0';  // Null-terminate the string
+    return result;
+}
+
+
+
+enum Command {
+    CMD_VERSION,
+    CMD_REBOOT,
+    CMD_WHOAMI,
+    CMD_TIME,
+    CMD_UNKNOWN
+    // ... other commands ...
+};
+
+enum Command get_command(const char *str) {
+    if (strcmp(str, "version")) return CMD_VERSION;
+    if (strcmp(str, "reboot")) return CMD_REBOOT;
+    if (strcmp(str, "whoami")) return CMD_WHOAMI;
+    if (strcmp(str, "time")) return CMD_TIME;
+    return CMD_UNKNOWN;
+}
+
+void terminal_process_command() {
+    char *command = parse_command(terminal_row);
+    terminal_new_line();
+    switch (get_command(command)) {
+        case CMD_VERSION:
+            terminal_writestring("Kernel version 1.0");
+            break;
+        case CMD_REBOOT:
+            terminal_writestring("Rebooting system...");
+            // Add reboot logic here
+            break;
+        case CMD_WHOAMI:
+            terminal_writestring("Revan");
+            break;
+        case CMD_TIME:
+            show_time(); break;
+        default:
+            terminal_writestring("bash: command '"); printf(command); terminal_writestring("' not recognised!!!");
+    }
+
+	terminal_new_line(); terminal_writestring("cheaky>");
 }
