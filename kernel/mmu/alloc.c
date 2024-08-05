@@ -64,7 +64,7 @@ void *ksbrk(uint16_t n)
 			realsize = KMALLOC_MINSIZE;
 		}
 
-		printf("Size required: %d\n", realsize);
+//		printf("Size required: %d\n", realsize);
 		struct kmalloc_header *chunk, *other;
 		chunk = (struct kmalloc_header*) &end;
 		while(chunk->used || chunk->size < realsize)
